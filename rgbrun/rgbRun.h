@@ -1,13 +1,12 @@
 #pragma once 
+
 #include "scene.h"
-#include "ecm.h"
-#include "rgbRun.h"
 #include <memory>
 //this header contains some globaly accesible variables
 
 //scene management code. workbook 4.2.3
 //each individual scene will hold all global variables related to this scene. 
-extern std::shared_ptr<Scene> gameScene; 
+extern std::shared_ptr<Scene> gameScene;
 extern std::shared_ptr<Scene> menuScene;
 extern std::shared_ptr<Scene> activeScene;
 

@@ -1,12 +1,13 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Entity.h"
-#include "Resource_Handler.h"
 #include "rgbRun.h"
+#include "scene.h"
 #include "system_renderer.h"
 
 using namespace sf;
 using namespace std;
+
+
 
 void Reset() {
 	
@@ -21,10 +22,10 @@ void Load(RenderWindow &window) {
 
 	//in the future we will use menu scene as a start
 	activeScene = gameScene;
+	Renderer::initialise(window);
 }
 
 void Update(RenderWindow &window) {
-
 	static Clock clock;
 	float dt = clock.restart().asSeconds();
 

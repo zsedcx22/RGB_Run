@@ -82,4 +82,11 @@ sf::Shape & ShapeComponent::getShape() const
 ShapeComponent::ShapeComponent(Entity* p)
 	: Component(p), _shape(make_shared<sf::CircleShape>()) {}
 
+Component::Component(Entity * const p) : _parent(p)
+{
+	
+}
 
+Component::~Component()
+{
+}

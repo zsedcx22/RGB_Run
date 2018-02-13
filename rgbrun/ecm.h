@@ -1,3 +1,5 @@
+//entity component model 
+
 #pragma once 
 
 #include <SFML/Graphics.hpp>
@@ -9,8 +11,10 @@
 using namespace std;
 using namespace sf;
 
+
 //class Component, Entity copied from 4.3.1
 class Component;	//forward declare 
+struct EntityManager;	//forward declare 
 
 class Entity {
 protected:
@@ -45,6 +49,12 @@ public:
 		_components.push_back(sp);
 		return sp;
 	}
+};
+
+struct EntityManager {
+	std::vector<std::shared_ptr<Entity>> list;
+	void update(double dt);
+	void render(sf::RenderWindow &window);
 };
 
 class Component {

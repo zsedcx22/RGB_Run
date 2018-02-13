@@ -1,5 +1,5 @@
 #include "system_renderer.h";
-#include <queue>
+
 
 using namespace sf;
 using namespace std;
@@ -7,7 +7,7 @@ using namespace std;
 //Comments are of what I think this stuff does, no explanation provided in the workbook
 
 
-static queue<const Drawable *> drawable;
+static queue<const Drawable*> drawable;
 
 //renderWindow is used to call the .draw() command
 static RenderWindow *rw;

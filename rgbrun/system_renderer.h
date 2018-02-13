@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
+#include <queue>
 
 namespace Renderer {
 	void initialise(sf::RenderWindow &);
