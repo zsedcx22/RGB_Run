@@ -1,6 +1,7 @@
 #include "scene_level1.h"
 #include "../components/cmp_player_physics.h"
 #include "../components/cmp_sprite.h"
+#include "../components/cmp_enemy_ai.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -41,9 +42,24 @@ void Level1Scene::Load() {
       e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
     }
   }
+  //create a platform
+  {
+	  auto wall = makeEntity();
+	  wall->setPosition(Vector2f(600.f, 300.f));
+	  wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
+	  //shape component 
+	  auto s = wall->addComponent<ShapeComponent>();
+	  s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
+	  s->getShape().setFillColor(Color::Magenta);
+
+	  //movement 
+	  auto m = wall->addComponent<ActorMovementComponent>();
+	  
+	  
+  }
 
   //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   cout << " Scene 1 Load Done" << endl;
 
   setLoaded(true);

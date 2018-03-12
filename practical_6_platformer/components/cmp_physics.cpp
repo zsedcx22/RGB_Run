@@ -7,8 +7,13 @@ using namespace sf;
 using namespace Physics;
 
 void PhysicsComponent::update(double dt) {
-  _parent->setPosition(invert_height(bv2_to_sv2(_body->GetPosition())));
-  _parent->setRotation((180 / b2_pi) * _body->GetAngle());
+	//only do this if physics apply to the object, 
+	//otherwise let other movement component take over the movement
+	if (_dynamic == true) {
+		_parent->setPosition(invert_height(bv2_to_sv2(_body->GetPosition())));
+		_parent->setRotation((180 / b2_pi) * _body->GetAngle());
+	}
+	
 }
 
 PhysicsComponent::PhysicsComponent(Entity* p, bool dyn,

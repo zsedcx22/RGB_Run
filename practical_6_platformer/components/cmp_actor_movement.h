@@ -12,6 +12,6 @@ public:
   void move(const sf::Vector2f&);
   void move(float x, float y);
   void render() override {}
-  explicit ActorMovementComponent(Entity* p);
+   ActorMovementComponent(Entity* p);
   ActorMovementComponent() = delete;
 };

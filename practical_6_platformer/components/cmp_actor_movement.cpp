@@ -5,10 +5,12 @@
 using namespace sf;
 using namespace std;
 
-void ActorMovementComponent::update(double dt) {}
+void ActorMovementComponent::update(double dt) {
+	move(Vector2f(-1.f, 0.f));
+}
 
 ActorMovementComponent::ActorMovementComponent(Entity* p)
-    : _speed(100.0f), Component(p) {}
+    : _speed(1.0f), Component(p) {}
 
 bool ActorMovementComponent::validMove(const sf::Vector2f& pos) {
   return (LevelSystem::getTileAt(pos) != LevelSystem::WALL);
