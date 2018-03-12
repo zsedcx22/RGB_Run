@@ -19,6 +19,8 @@ void Level1Scene::Load() {
   auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
   ls::setOffset(Vector2f(0, ho));
 
+  
+
   // Create player
   {
     player = makeEntity();
@@ -53,10 +55,10 @@ void Level1Scene::Load() {
 	  s->getShape().setFillColor(Color::Magenta);
 
 	  //movement 
-	  auto m = wall->addComponent<ActorMovementComponent>();
-	  
-	  
+	  auto m = wall->addComponent<ActorMovementComponent>();  
   }
+
+  //
 
   //Simulate long loading times
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -73,14 +75,38 @@ void Level1Scene::UnLoad() {
 }
 
 void Level1Scene::Update(const double& dt) {
-
   if (ls::getTileAt(player->getPosition()) == ls::END) {
     Engine::ChangeScene((Scene*)&level2);
   }
-  Scene::Update(dt);
+  
+
+
 }
 
 void Level1Scene::Render() {
   ls::render(Engine::GetWindow());
   Scene::Render();
+}
+
+void Level1Scene::GenerateBlocks() {
+	////use simple static counter as a timer
+	//if (_frameCount < _generateSpeed) {
+	//	//things when generator is idle
+	//	_frameCount++;
+	//}
+	//else {
+	//	//do things related to generating + reset timer
+	//	{
+	//		auto wall = makeEntity();
+	//		wall->setPosition(Vector2f(600.f, 300.f));
+	//		wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
+	//		//shape component 
+	//		auto s = wall->addComponent<ShapeComponent>();
+	//		s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
+	//		s->getShape().setFillColor(Color::Magenta);
+
+	//		//movement 
+	//		auto m = wall->addComponent<ActorMovementComponent>();
+	//	}
+	//}
 }
