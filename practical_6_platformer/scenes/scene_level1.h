@@ -5,7 +5,7 @@
 class Level1Scene : public Scene {
 private:
 	int _frameCount;
-	int _generateSpeed = 100;
+	int _generateSpeed = 1000;
 
 public:
   void Load() override;

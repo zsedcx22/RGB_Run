@@ -79,8 +79,20 @@ void Level1Scene::Update(const double& dt) {
     Engine::ChangeScene((Scene*)&level2);
   }
   
+  //use simple static counter as a timer
+  if (_frameCount < _generateSpeed) {
+	  //things when generator is idle
+	  _frameCount++;
+  }
+  else {
+	  //do things related to generating + reset timer
+	  {
+		  GenerateBlocks();
+		  _frameCount = 0;
+	  }
+  }
 
-
+  Scene::Update(dt);
 }
 
 void Level1Scene::Render() {
@@ -89,24 +101,14 @@ void Level1Scene::Render() {
 }
 
 void Level1Scene::GenerateBlocks() {
-	////use simple static counter as a timer
-	//if (_frameCount < _generateSpeed) {
-	//	//things when generator is idle
-	//	_frameCount++;
-	//}
-	//else {
-	//	//do things related to generating + reset timer
-	//	{
-	//		auto wall = makeEntity();
-	//		wall->setPosition(Vector2f(600.f, 300.f));
-	//		wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
-	//		//shape component 
-	//		auto s = wall->addComponent<ShapeComponent>();
-	//		s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
-	//		s->getShape().setFillColor(Color::Magenta);
+	auto wall = makeEntity();
+	wall->setPosition(Vector2f(600.f, 300.f));
+	wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
+	//shape component 
+	auto s = wall->addComponent<ShapeComponent>();
+	s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
+	s->getShape().setFillColor(Color::Magenta);
 
-	//		//movement 
-	//		auto m = wall->addComponent<ActorMovementComponent>();
-	//	}
-	//}
+	//movement 
+	auto m = wall->addComponent<ActorMovementComponent>();
 }
