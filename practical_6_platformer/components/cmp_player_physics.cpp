@@ -34,9 +34,7 @@ void PlayerPhysicsComponent::update(double dt) {
   const auto pos = _parent->getPosition();
 
   //Teleport to start if we fall off map.
-  if (pos.y > ls::getHeight() * ls::getTileSize()) {
-    teleport(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-  }
+
 
   if (Keyboard::isKeyPressed(Keyboard::Left) ||
       Keyboard::isKeyPressed(Keyboard::Right)) {

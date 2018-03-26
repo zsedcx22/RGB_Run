@@ -1,109 +1,80 @@
 #include "scene_level1.h"
-#include "../components/cmp_player_physics.h"
+#include "../components/cmp_movement_player.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_dm.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
 #include <thread>
-
+#include <SFML\Graphics.hpp>
 using namespace std;
 using namespace sf;
 
 static shared_ptr<Entity> player;
 
 void Level1Scene::Load() {
-  cout << " Scene 1 Load" << endl;
-  ls::loadLevelFile("res/level_1.txt", 40.0f);
 
-  auto ho = Engine::getWindowSize().y - (ls::getHeight() * 40.f);
-  ls::setOffset(Vector2f(0, ho));
+	
+	
+	auto playerStart = Vector2f(400, 50);
+	// Create player
+	{
+		player = makeEntity();
+		player->setPosition(playerStart);
+		player->addTag("player");
+		auto s = player->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
+		s->getShape().setFillColor(Color::Magenta);
+		s->getShape().setOrigin(10.f, 15.f);
+		auto q = player->addComponent<PlayerMovementComponent>();
+	}
+	{
+		auto wall = makeEntity();
+		wall->setPosition(Vector2f(380.f, 300.f));
+		wall->addTag("floor");
+		//shape component 
+		auto s = wall->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(900.f, 40.f));
+		s->getShape().setFillColor(Color::Magenta);
 
-  
+		//movement 
+		//auto m = wall->addComponent<ActorMovementComponent>();
+	}
+	{
+		auto dm = makeEntity();
+		dm->setPosition(Vector2f(200, 200));
+		auto x = dm->addComponent<DMComponent>();
 
-  // Create player
-  {
-    player = makeEntity();
-    player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
-    auto s = player->addComponent<ShapeComponent>();
-    s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
-    s->getShape().setFillColor(Color::Magenta);
-    s->getShape().setOrigin(10.f, 15.f);
+	}
+	// GenerateBlocks();
+	////Simulate long loading times
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	std::cout << " Scene 1 Load Done" << endl;
 
-    player->addComponent<PlayerPhysicsComponent>(Vector2f(20.f, 30.f));
-  }
-
-  // Add physics colliders to level tiles.
-  {
-    auto walls = ls::findTiles(ls::WALL);
-    for (auto w : walls) {
-      auto pos = ls::getTilePosition(w);
-      pos += Vector2f(20.f, 20.f); //offset to center
-      auto e = makeEntity();
-      e->setPosition(pos);
-      e->addComponent<PhysicsComponent>(false, Vector2f(40.f, 40.f));
-    }
-  }
-  //create a platform
-  {
-	  auto wall = makeEntity();
-	  wall->setPosition(Vector2f(600.f, 300.f));
-	  wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
-	  //shape component 
-	  auto s = wall->addComponent<ShapeComponent>();
-	  s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
-	  s->getShape().setFillColor(Color::Magenta);
-
-	  //movement 
-	  auto m = wall->addComponent<ActorMovementComponent>();  
-  }
-
-  //
-
-  //Simulate long loading times
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  cout << " Scene 1 Load Done" << endl;
-
-  setLoaded(true);
+	setLoaded(true);
 }
 
 void Level1Scene::UnLoad() {
-  cout << "Scene 1 Unload" << endl;
-  player.reset();
-  ls::unload();
-  Scene::UnLoad();
+	std::cout << "Scene 1 Unload" << endl;
+	player.reset();
+	Scene::UnLoad();
 }
 
 void Level1Scene::Update(const double& dt) {
-  if (ls::getTileAt(player->getPosition()) == ls::END) {
-    Engine::ChangeScene((Scene*)&level2);
-  }
-  
-  //use simple static counter as a timer
-  if (_frameCount < _generateSpeed) {
-	  //things when generator is idle
-	  _frameCount++;
-  }
-  else {
-	  //do things related to generating + reset timer
-	  {
-		  GenerateBlocks();
-		  _frameCount = 0;
-	  }
-  }
-
-  Scene::Update(dt);
+	//GenerateBlocks();
+	
+	Scene::Update(dt);
 }
 
 void Level1Scene::Render() {
-  ls::render(Engine::GetWindow());
-  Scene::Render();
+	Scene::Render();
 }
 
 void Level1Scene::GenerateBlocks() {
 	auto wall = makeEntity();
-	wall->setPosition(Vector2f(600.f, 300.f));
-	wall->addComponent<PhysicsComponent>(false, Vector2f(90.f, 40.f));
+	wall->setPosition(Vector2f(400.f, 300.f));
+	wall->addTag("floor");
 	//shape component 
 	auto s = wall->addComponent<ShapeComponent>();
 	s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));

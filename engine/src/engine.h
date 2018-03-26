@@ -6,6 +6,16 @@
 #include <mutex>
 #include <string>
 
+//my own physics engine
+class MyPhysics {
+private:
+	int x = 10;
+
+public:
+	int getThing(int x);
+
+};
+
 class Scene {
 public:
   Scene() = default;
@@ -19,6 +29,7 @@ public:
   std::shared_ptr<Entity> makeEntity();
 
   EntityManager ents;
+  //MyPhysics physics; 
 
 protected:
   void setLoaded(bool);
@@ -44,6 +55,8 @@ private:
   static void Update();
   static void Render(sf::RenderWindow& window);
 };
+
+
 
 namespace timing {
 // Return time since Epoc

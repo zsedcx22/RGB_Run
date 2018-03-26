@@ -192,3 +192,13 @@ long long last() {
 } // namespace timing
 
 Scene::~Scene() { UnLoad(); }
+
+
+//our implementation of the physics engine / collision engine.
+int MyPhysics::getThing(int x) {
+	cout << "Physics thing " <<  x << "\n";
+	//Engine::get
+	
+	return 0;
+
+}
