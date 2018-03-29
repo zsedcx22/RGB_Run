@@ -22,7 +22,7 @@ void Level1Scene::Load() {
 		player->addTag("player");
 		auto s = player->addComponent<ShapeComponent>();
 		s->setShape<sf::RectangleShape>(Vector2f(20.f, 30.f));
-		s->getShape().setFillColor(Color::Magenta);
+		s->getShape().setFillColor(Color::Red);
 		s->getShape().setOrigin(10.f, 15.f);
 		auto q = player->addComponent<PlayerMovementComponent>();
 	}
@@ -57,7 +57,7 @@ void Level1Scene::Load() {
 		//shape component 
 		auto s = wall->addComponent<ShapeComponent>();
 		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-		s->getShape().setFillColor(Color::White);
+		s->getShape().setFillColor(Color::Red);
 	}
 	{
 		/*auto dm = makeEntity();

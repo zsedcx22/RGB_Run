@@ -15,14 +15,17 @@ protected:
   int dirX = 0;
   int dirY = 0;
   int falling = 1;
-
+  
   //collision swiches
   bool _grounded = false;
   bool _jumping = true;
   bool _mvLeft = true;
   bool _mvRight = true;
+  
+  
 
-  float _pulse = 600.0f *3;
+
+  float _pulse = 1.2f;
   float _y_acceleration = 0.f;
   //float _x_acceleration = 0.f;
   const float _friction = 2.f;
@@ -41,7 +44,7 @@ public:
   void getCollision(sf::Vector2f pos);
 
   void updatePhysics();
-  void updateMovement(sf::Vector2f pos);
+  void updateMovement(sf::Vector2f pos,double dt);
 
    PlayerMovementComponent(Entity* p);
   PlayerMovementComponent() = delete;

@@ -1,4 +1,5 @@
 #include "cmp_movement_player.h"
+#include "cmp_sprite.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
@@ -12,31 +13,24 @@ void PlayerMovementComponent::update(double dt) {
 	float y = 0.f;
 	
 	//check position state: set if falling, jumping ect.
-	
 	_grounded = isGrounded(pos);
-	updateMovement(pos);
+	updateMovement(pos,dt);
 	
 	//update jump
-	
-
-
 	if (!_jumping && !_grounded) {
 		_y_acceleration = _pulse/_gravity * -1;
 	}
 	if (!_grounded) {
 		y -= _y_acceleration;
-		_y_acceleration -= _gravity;
+		_y_acceleration -= _gravity*dt;
 	}
 	
 	if (_grounded) {
 		_jumping = false;	
 		//todo -= the speed of the object standing on
 		x -= 10.0f;
-
 	}
-
-	
-	move(Vector2f( (dirX*_speed*50)*dt , (y)*dt ));
+	move(Vector2f( (dirX*_speed*50)*dt , (y)));
 }
 
 void PlayerMovementComponent::setSpeed(float spd)
@@ -51,6 +45,8 @@ void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 	auto playerLeft = pos.x;
 	auto playerRight = pos.x + 10;	//players width
 
+	unsigned int _playerColour = _parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+	
 	bool grounded = false;
 	bool collidable;
 	//access the list of entities
@@ -65,7 +61,12 @@ void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 		auto tags = obj->getTags();
 		for (std::set<std::string>::iterator it = tags.begin(); it != tags.end(); ++it) {
 			if (*it == "floor") {
-				collidable = true;		
+				unsigned int color = obj->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+				
+				if (color == _playerColour) {
+					collidable = false;
+				}
+				else collidable = true;
 			}
 		}
 		
@@ -97,20 +98,6 @@ void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 			}
 		}
 		if (collidable) {
-			//check if a platform is in your way
-			//right
-			//if (pos.y > obj->getPosition().y + 20  && pos.y < obj->getPosition().y + 20)
-			//{
-			//	//check x position
-			//	//TODO hardcoded size of the platform
-			//	if (playerRight < obj->getPosition().x && playerTop > obj->getPosition().x - 10) {
-			//		_mvRight = false;
-			//	}
-			//	else {
-			//		_mvRight = true;
-			//	}
-			//}
-			
 			//right
 			if (obj->getPosition().y > pos.y - 30 && obj->getPosition().y < pos.y + 30) {
 				if (pos.x +5 > obj->getPosition().x - 5 && pos.x < obj->getPosition().x +5) {
@@ -136,11 +123,7 @@ void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 			else {
 				_mvLeft = true;
 			}
-			//left
-
-
 		}
-
 	}
 }
 
@@ -167,7 +150,7 @@ bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
 	auto playerBottom = pos.y + 15;	//players height
 	auto playerLeft = pos.x;
 	auto playerRight = pos.x + 10;	//players width
-
+	unsigned int _playerColour = _parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
 	bool grounded;
 	bool collidable;
 	//access the list of entities
@@ -181,7 +164,11 @@ bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
 		auto tags = obj->getTags();
 		for (std::set<std::string>::iterator it = tags.begin(); it != tags.end(); ++it) {
 			if (*it == "floor") {
-				collidable = true;
+				unsigned int color = obj->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+				if (color == _playerColour) {
+					collidable = false;
+				}
+				else collidable = true;
 			}
 		}
 		if (collidable) {
@@ -210,11 +197,9 @@ void PlayerMovementComponent::updatePhysics()
 
 }
 
-void PlayerMovementComponent::updateMovement(sf::Vector2f pos)
+void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 {
 	//check collision
-	
-
 	if (Keyboard::isKeyPressed(Keyboard::Left) ||
 		Keyboard::isKeyPressed(Keyboard::Right)) {
 		// Moving Either Left or Right
@@ -261,6 +246,25 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos)
 		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
 	}
+	
+	if (Keyboard::isKeyPressed(Keyboard::Q)) {
+		//red
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Red);
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::W)) {
+		//green
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Green);
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::E)) {
+		//blue
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Blue);
+	}
+
 }
 
 PlayerMovementComponent::PlayerMovementComponent(Entity* p)
