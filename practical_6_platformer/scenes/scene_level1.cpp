@@ -14,9 +14,6 @@ using namespace sf;
 static shared_ptr<Entity> player;
 
 void Level1Scene::Load() {
-
-	
-	
 	auto playerStart = Vector2f(400, 50);
 	// Create player
 	{
@@ -35,17 +32,38 @@ void Level1Scene::Load() {
 		wall->addTag("floor");
 		//shape component 
 		auto s = wall->addComponent<ShapeComponent>();
-		s->setShape<sf::RectangleShape>(Vector2f(900.f, 40.f));
-		s->getShape().setFillColor(Color::Magenta);
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+		s->getShape().setFillColor(Color::White);
 
 		//movement 
 		//auto m = wall->addComponent<ActorMovementComponent>();
 	}
 	{
-		auto dm = makeEntity();
+		auto wall = makeEntity();
+		wall->setPosition(Vector2f(530.f, 300.f));
+		wall->addTag("floor");
+		//shape component 
+		auto s = wall->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+		s->getShape().setFillColor(Color::White);
+
+		//movement 
+		//auto m = wall->addComponent<ActorMovementComponent>();
+	}
+	{
+		auto wall = makeEntity();
+		wall->setPosition(Vector2f(450.f, 200.f));
+		wall->addTag("floor");
+		//shape component 
+		auto s = wall->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+		s->getShape().setFillColor(Color::White);
+	}
+	{
+		/*auto dm = makeEntity();
 		dm->setPosition(Vector2f(200, 200));
 		auto x = dm->addComponent<DMComponent>();
-
+*/
 	}
 	// GenerateBlocks();
 	////Simulate long loading times

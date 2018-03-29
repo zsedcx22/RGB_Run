@@ -8,15 +8,24 @@ private:
 
 protected:
   bool validMove(const sf::Vector2f&);
-  float _speed=0.f;
-  bool _grounded = false;
- // bool _jumping = false;
+  //current speed.
+  float _speed=40.f;
   
+  // -1,0 or 1;
+  int dirX = 0;
+  int dirY = 0;
+  int falling = 1;
+
+  //collision swiches
+  bool _grounded = false;
+  bool _jumping = true;
+  bool _mvLeft = true;
+  bool _mvRight = true;
 
   float _pulse = 600.0f *3;
   float _y_acceleration = 0.f;
   //float _x_acceleration = 0.f;
-  const float _friction = 4.f;
+  const float _friction = 2.f;
   const float _gravity = 3.0f;
 
 public:
@@ -29,9 +38,10 @@ public:
   float getYPosition(float y);
   void updateJump();
   void loadEntites();
+  void getCollision(sf::Vector2f pos);
 
   void updatePhysics();
-  void updateMovement();
+  void updateMovement(sf::Vector2f pos);
 
    PlayerMovementComponent(Entity* p);
   PlayerMovementComponent() = delete;
