@@ -6,7 +6,7 @@ using namespace sf;
 using namespace std;
 
 void ActorMovementComponent::update(double dt) {
-	move(Vector2f(-10.0f*dt, 0.f));
+	move(Vector2f(-100.0f*dt, 0.f));
 }
 
 ActorMovementComponent::ActorMovementComponent(Entity* p)

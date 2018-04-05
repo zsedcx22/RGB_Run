@@ -1,4 +1,5 @@
 #include "cmp_movement_player.h"
+#include "cmp_sprite.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
@@ -13,23 +14,23 @@ void PlayerMovementComponent::update(double dt) {
 	
 	//check position state: set if falling, jumping ect.
 	_grounded = isGrounded(pos);
-
+	updateMovement(pos,dt);
+	
 	//update jump
-	updateMovement();
-
+	if (!_jumping && !_grounded) {
+		_y_acceleration = _pulse/_gravity * -1;
+	}
 	if (!_grounded) {
 		y -= _y_acceleration;
-		_y_acceleration -= _gravity;
+		_y_acceleration -= _gravity*dt;
 	}
+	
 	if (_grounded) {
-		_y_acceleration = 0;
-		x -= 20.0f;
-
+		_jumping = false;	
+		//todo -= the speed of the object standing on
+		x -= 100.0f;
 	}
-
-	
-	
-	move(Vector2f( (x+=_speed)*dt , (y)*dt ));
+	move(Vector2f( (x+(dirX*_speed*50))*dt , (y)));
 }
 
 void PlayerMovementComponent::setSpeed(float spd)
@@ -37,12 +38,20 @@ void PlayerMovementComponent::setSpeed(float spd)
 	this->_speed = spd;
 }
 
-bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
+void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 {	
-	bool grounded;
+	auto playerTop = pos.y;
+	auto playerBottom = pos.y +15 ;	//players height
+	auto playerLeft = pos.x;
+	auto playerRight = pos.x + 10;	//players width
+
+	unsigned int _playerColour = _parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+	
+	bool grounded = false;
 	bool collidable;
 	//access the list of entities
 	auto x = Component::_parent->scene->ents.list;
+
 	//iteration through entities
 	for (auto i = x.begin(); i != x.end(); i++) {
 		auto obj = *i;
@@ -52,30 +61,70 @@ bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
 		auto tags = obj->getTags();
 		for (std::set<std::string>::iterator it = tags.begin(); it != tags.end(); ++it) {
 			if (*it == "floor") {
-				collidable = true;
+				unsigned int color = obj->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
 				
+				if (color == _playerColour) {
+					collidable = false;
+				}
+				else collidable = true;
 			}
 		}
 		
-		if (collidable) {
+		if (collidable && !grounded) {	
 			//perform the collision check
 			//check y position
-			if (pos.y > obj->getPosition().y-5 && pos.y < obj->getPosition().y + 5 ) 
+			//height of the platforms is static.
+			
+			//check if touching the floor
+			if (playerBottom < obj->getPosition().y + 5  && playerBottom > obj->getPosition().y) 
 			{
 				//check x position
-				if (pos.x > obj->getPosition().x &&  pos.x < obj->getPosition().x + 900)
-					return true;
+				//TODO hardcoded size of the platform
+				if (pos.x > obj->getPosition().x &&  pos.x < obj->getPosition().x + 150) {
+					_jumping = false;
+				}
+				else {
+				}
+			}
+			
+			//check if touches the ceiling 
+			if (playerTop > obj->getPosition().y + 20 && playerTop < obj->getPosition().y +55)
+			{
+				//check x position
+				//TODO hardcoded size of the platform
+				if (pos.x > obj->getPosition().x &&  pos.x < obj->getPosition().x + 150) {
+					_jumping = false;
+				}
+			}
+		}
+		if (collidable) {
+			//right
+			if (obj->getPosition().y > pos.y - 30 && obj->getPosition().y < pos.y + 30) {
+				if (pos.x +5 > obj->getPosition().x - 5 && pos.x < obj->getPosition().x +5) {
+					_mvRight = false;
+				}
+				else {
+					_mvRight = true;
+				}
 			}
 			else {
-				grounded = false;
+				_mvRight = true;
+			}
+
+			//left
+			if (obj->getPosition().y > pos.y - 30 && obj->getPosition().y < pos.y + 30) {
+				if (pos.x + 5 > obj->getPosition().x +155 && pos.x < obj->getPosition().x + 160) {
+					_mvLeft = false;
+				}
+				else {
+					_mvLeft = true;
+				}
+			}
+			else {
+				_mvLeft = true;
 			}
 		}
-		else {
-			grounded = false;
-		}
 	}
-
-	return grounded;
 }
 
 float PlayerMovementComponent::getYPosition(float y)
@@ -95,43 +144,97 @@ void PlayerMovementComponent::loadEntites()
 
 }
 
+bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
+{
+	auto playerTop = pos.y;
+	auto playerBottom = pos.y + 15;	//players height
+	auto playerLeft = pos.x;
+	auto playerRight = pos.x + 10;	//players width
+	unsigned int _playerColour = _parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+	bool grounded;
+	bool collidable;
+	//access the list of entities
+	auto x = Component::_parent->scene->ents.list;
+	//iteration through entities
+	for (auto i = x.begin(); i != x.end(); i++) {
+		auto obj = *i;
+		//auto comp = obj->get_components();	
+		collidable = false;
+		//check tags to see if object is colidable. floors/ enemies/ platforms
+		auto tags = obj->getTags();
+		for (std::set<std::string>::iterator it = tags.begin(); it != tags.end(); ++it) {
+			if (*it == "floor") {
+				unsigned int color = obj->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
+				if (color == _playerColour) {
+					collidable = false;
+				}
+				else collidable = true;
+			}
+		}
+		if (collidable) {
+			//perform the collision check
+			//check y position
+			if (playerBottom < obj->getPosition().y + 40 && playerBottom > obj->getPosition().y)
+			{
+				//check x position
+				if (pos.x > obj->getPosition().x - 5 &&  pos.x < obj->getPosition().x + 155)
+					return true;
+			}
+			else {
+				grounded = false;
+			}
+		}
+		else {
+			grounded = false;
+		}
+	}
+	return grounded;
+}
+
 void PlayerMovementComponent::updatePhysics()
 {
 
 
 }
 
-void PlayerMovementComponent::updateMovement()
+void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 {
+	//check collision
 	if (Keyboard::isKeyPressed(Keyboard::Left) ||
 		Keyboard::isKeyPressed(Keyboard::Right)) {
 		// Moving Either Left or Right
-		if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			if (_speed < 1000)
-				_speed += _friction;
+		//check collision everytime a buyttoin is pressed
+		
+		if (Keyboard::isKeyPressed(Keyboard::Right) && _mvRight) {
+			getCollision(pos);
+			if (_mvRight) {
+				dirX = 1;
+			}
+			else {
+				dirX = 0;
+			}
 		}
-		else {
-			if (_speed > -1000)
-				_speed -= _friction;
+		else if(Keyboard::isKeyPressed(Keyboard::Left) && _mvLeft){
+			getCollision(pos);
+			if (_mvLeft) {
+				dirX = -1;
+			}
+			else {
+				dirX = 0;
+			}
 		}
 	}
 	else {
-		if (_speed > 5) {
-			_speed -= _friction;
-		}
-		else if (_speed < -5) {
-			_speed += _friction;
-		}
-		else _speed = 0;
+		dirX = 0;
 	}
-
 
 	//jump behaviour
 	if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		getCollision(pos);
 		if (_grounded) {
 			_y_acceleration = 0;
 			_grounded = false;
-			//_jumping = true;
+			_jumping = true;
 			_y_acceleration += _pulse;
 		}
 	}
@@ -139,9 +242,29 @@ void PlayerMovementComponent::updateMovement()
 	if (Keyboard::isKeyPressed(Keyboard::F1)) {
 		//input debug information here
 		auto x = Component::_parent->scene->ents.list;
-
+		_grounded = false;
+		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
 	}
+	
+	if (Keyboard::isKeyPressed(Keyboard::Q)) {
+		//red
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Red);
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::W)) {
+		//green
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Green);
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::E)) {
+		//blue
+		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
+		s->getShape().setFillColor(Color::Blue);
+	}
+
 }
 
 PlayerMovementComponent::PlayerMovementComponent(Entity* p)
