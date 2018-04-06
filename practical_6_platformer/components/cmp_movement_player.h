@@ -15,16 +15,20 @@ protected:
   int dirX = 0;
   int dirY = 0;
   int falling = 1;
+
+  //collision swiches
+  bool _grounded = false;
+  bool _jumping = false;
+  bool _mvLeft = true;
+  bool _mvRight = true;
+  bool _firePressed = false;
   
   //collision swiches
   bool _grounded = false;
   bool _jumping = true;
   bool _mvLeft = true;
   bool _mvRight = true;
-  
-  
-
-
+ 
   float _pulse = 1.2f;
   float _y_acceleration = 0.f;
   //float _x_acceleration = 0.f;
@@ -42,6 +46,8 @@ public:
   void updateJump();
   void loadEntites();
   void getCollision(sf::Vector2f pos);
+  void fireBulet(sf::Vector2f pos);
+
 
   void updatePhysics();
   void updateMovement(sf::Vector2f pos,double dt);
