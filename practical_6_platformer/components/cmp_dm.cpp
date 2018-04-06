@@ -15,24 +15,119 @@ using namespace std;
 void DMComponent::update(double dt)
 {
 	if (_frameCount < _generateSpeed) {
-		_frameCount++;
-
+		_frameCount += 2;
 	}
-	else {
+	/*if (Keyboard::isKeyPressed(Keyboard::F1)) {
+		_genCounter = 1;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::F2)) {
+		_genCounter = 2;
+	}*/
+	else 
+	{
+		if (_gameState == 0)
+		{
+			auto wall = Component::_parent->scene->makeEntity();
+			//auto wall = makeEntity();
+			wall->setPosition(Vector2f(_platLGen, _platHGen));
+			wall->addTag("floor");
+			//shape component 
+			auto s = wall->addComponent<ShapeComponent>();
+			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+			//changeable variable
+			s->getShape().setFillColor(Color::White);
+			//movement 
+			auto m = wall->addComponent<ActorMovementComponent>();
+			_frameCount = 0;
+			_genCounter += 1;
+			if (_genCounter >= 15)
+			{
+				_gameState = 1;
+				_genCounter = 0;
+				_generateSpeed = 1000;
+			}
+		}
+		else if (_gameState == 1)
+		{
+			auto wall = Component::_parent->scene->makeEntity();
+			//auto wall = makeEntity();
+			wall->setPosition(Vector2f(_platLGen, _platHGen));
+			wall->addTag("floor");
+			//shape component 
+			auto s = wall->addComponent<ShapeComponent>();
+			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+			//changeable variable
+			if (_lastColour == 0)
+			{
+				s->getShape().setFillColor(Color::Red);
+				_lastColour = 1;
+			}
+			else
+			{
+				s->getShape().setFillColor(Color::Green);
+				_lastColour = 0;
+			}
+			//movement 
+			auto m = wall->addComponent<ActorMovementComponent>();
+			_frameCount = 0;
+			_genCounter += 1;
+			if (_genCounter >= 15)
+			{
+				_gameState = 2;
+				_genCounter = 0;
+			}
+		}
+		else if (_gameState == 2)
+		{
+			auto wall = Component::_parent->scene->makeEntity();
+			//auto wall = makeEntity();
+			wall->setPosition(Vector2f(_platLGen, _platHGen));
+			wall->addTag("floor");
+			//shape component 
+			auto s = wall->addComponent<ShapeComponent>();
+			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+			//changeable variable
+			if (_lastColour == 0)
+			{
+				s->getShape().setFillColor(Color::Red);
+				_lastColour = 1;
+			}
+			else if(_lastColour == 1)
+			{
+				s->getShape().setFillColor(Color::Green);
+				_lastColour = 2;
+			}
+			else
+			{
+				s->getShape().setFillColor(Color::Blue);
+				_lastColour = 0;
+			}
+			while (_platHGen > 0.f && _platHGen < 720.f)
+			{
+				if (_platHGen < 360.f)
+				{
+					_platHGen += (rand() % 500) * 1.f;
+				}
+				else
+				{
+					_platHGen -= (rand() % 500) * 1.f;
+				}
 
-		auto wall = Component::_parent->scene->makeEntity();
-		//auto wall = makeEntity();
-		wall->setPosition(Vector2f(400.f, 250.f));
-		wall->addTag("floor");
-		//shape component 
-		auto s = wall->addComponent<ShapeComponent>();
-		s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
-		//changeable variable
-		s->getShape().setFillColor(Color::White);
-		//movement 
-		auto m = wall->addComponent<ActorMovementComponent>();
-
-		_frameCount = 0;
+				if (_platHGen > 0.f && _platHGen < 720.f)
+				{
+					cout << _platHGen;
+					break;
+				}
+				else
+				{
+					_platHGen = 360.f;
+				}
+				
+			}
+			//movement 
+			auto m = wall->addComponent<ActorMovementComponent>();
+			_frameCount = 0;
+		}
 	}
 
 }

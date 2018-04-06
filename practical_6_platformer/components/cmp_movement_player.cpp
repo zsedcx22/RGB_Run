@@ -25,12 +25,12 @@ void PlayerMovementComponent::update(double dt) {
 	if (!_grounded) {
 		y -= _y_acceleration*_gravity;
 		_y_acceleration -= _gravity;
+
 	}
 	
 	if (_grounded) {
 		_jumping = false;	
 		//todo -= the speed of the object standing on
-		x -= 10.0f;
 	}
 
 	//bullet button pressed
@@ -250,7 +250,6 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 	if (Keyboard::isKeyPressed(Keyboard::F1)) {
 		//input debug information here
 		auto x = Component::_parent->scene->ents.list;
-		fireBulet(_parent->getPosition());
 		_grounded = false;
 		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
