@@ -1,9 +1,11 @@
 #include "cmp_movement_player.h"
 #include "cmp_sprite.h"
+#include "cmp_bullet.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML\Graphics.hpp>
 using namespace sf;
 using namespace std;
 
@@ -18,11 +20,11 @@ void PlayerMovementComponent::update(double dt) {
 	
 	//update jump
 	if (!_jumping && !_grounded) {
-		_y_acceleration = _pulse/_gravity * -1;
+		_y_acceleration -= 1.2f/_gravity ;
 	}
 	if (!_grounded) {
-		y -= _y_acceleration;
-		_y_acceleration -= _gravity*dt;
+		y -= _y_acceleration*_gravity;
+		_y_acceleration -= _gravity;
 	}
 	
 	if (_grounded) {
@@ -30,7 +32,11 @@ void PlayerMovementComponent::update(double dt) {
 		//todo -= the speed of the object standing on
 		x -= 10.0f;
 	}
-	move(Vector2f( (dirX*_speed*50)*dt , (y)));
+
+	//bullet button pressed
+
+
+	move(Vector2f( (dirX*_speed*50)*dt , (y*dt)));
 }
 
 void PlayerMovementComponent::setSpeed(float spd)
@@ -126,6 +132,8 @@ void PlayerMovementComponent::getCollision(sf::Vector2f pos)
 		}
 	}
 }
+
+
 
 float PlayerMovementComponent::getYPosition(float y)
 {
@@ -242,6 +250,7 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 	if (Keyboard::isKeyPressed(Keyboard::F1)) {
 		//input debug information here
 		auto x = Component::_parent->scene->ents.list;
+		fireBulet(_parent->getPosition());
 		_grounded = false;
 		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
@@ -265,8 +274,27 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 		s->getShape().setFillColor(Color::Blue);
 	}
 
+	if (Keyboard::isKeyPressed(Keyboard::Space) && !_firePressed) {
+		//blue
+		fireBulet(pos);
+		_firePressed = true;
+	}
+	if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+		_firePressed = false;
+	}
 }
 
+void PlayerMovementComponent::fireBulet(sf::Vector2f pos)
+{
+	auto bullet = Component::_parent->scene->makeEntity();
+	bullet->setPosition(pos);
+	bullet->addTag("bullet");
+	auto s = bullet->addComponent<BulletComponent>();
+	auto p = bullet->addComponent<ShapeComponent>();
+	p->setShape<sf::RectangleShape>(Vector2f(5.f, 5.f));
+	p->getShape().setFillColor(_parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor());
+	p->getShape().setOrigin(-40,0);
+}
 PlayerMovementComponent::PlayerMovementComponent(Entity* p)
     : _speed(10.f), Component(p) {}
 
