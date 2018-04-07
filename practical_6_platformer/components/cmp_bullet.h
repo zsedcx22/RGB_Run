@@ -4,12 +4,12 @@
 
 class BulletComponent : public Component {
 protected:
-  float _lifetime;
+	float _lifetime;
 
 public:
-  void update(double dt) override;
-  void render() override {}
-  void move(float x, float y);
-  explicit BulletComponent(Entity* p, float lifetime = 3.f);
-  BulletComponent() = delete;
+	void update(double dt) override;
+	void render() override {}
+	void move(float x, float y);
+	explicit BulletComponent(Entity* p, float lifetime = 3.f);
+	BulletComponent() = delete;
 };

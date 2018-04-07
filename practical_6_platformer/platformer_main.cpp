@@ -10,5 +10,4 @@ Level1Scene level1;
 
 int main() {
   Engine::Start(1280, 720, "Platformer",&level1);
-  Engine::setVsync(true);
 }

@@ -34,8 +34,9 @@ void Level1Scene::Load() {
 		auto s = wall->addComponent<ShapeComponent>();
 		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
 		s->getShape().setFillColor(Color::White);
+
 		//movement 
-		//auto m = wall->addComponent<ActorMovementComponent>();
+		auto m = wall->addComponent<ActorMovementComponent>();
 	}
 	{
 		auto wall = makeEntity();
@@ -45,23 +46,15 @@ void Level1Scene::Load() {
 		auto s = wall->addComponent<ShapeComponent>();
 		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
 		s->getShape().setFillColor(Color::White);
-		//movement 
-		//auto m = wall->addComponent<ActorMovementComponent>();
-	}
-	{
-		auto wall = makeEntity();
-		wall->setPosition(Vector2f(450.f, 200.f));
-		wall->addTag("floor");
-		//shape component 
-		auto s = wall->addComponent<ShapeComponent>();
-		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-		s->getShape().setFillColor(Color::Red);
-	}
-	{
 
+		//movement 
+		auto m = wall->addComponent<ActorMovementComponent>();
+	}
+	{
 		auto dm = makeEntity();
 		dm->setPosition(Vector2f(200, 200));
 		auto x = dm->addComponent<DMComponent>();
+
 	}
 	// GenerateBlocks();
 	////Simulate long loading times
