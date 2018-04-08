@@ -293,8 +293,9 @@ void PlayerMovementComponent::fireBullet(sf::Vector2f pos)
 {
 	auto bullet = Component::_parent->scene->makeEntity();
 	bullet->setPosition(pos);
-	bullet->addTag("bullet");
+	bullet->addTag("bullet_player");
 	auto s = bullet->addComponent<BulletComponent>();
+	s->setDirection(1);
 	auto p = bullet->addComponent<ShapeComponent>();
 	p->setShape<sf::RectangleShape>(Vector2f(5.f, 5.f));
 	p->getShape().setFillColor(_parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor());

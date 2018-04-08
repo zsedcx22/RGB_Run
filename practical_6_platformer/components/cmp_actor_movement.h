@@ -1,11 +1,10 @@
-
 #pragma once
 #include <ecm.h>
 
 class ActorMovementComponent : public Component {
 protected:
   bool validMove(const sf::Vector2f&);
-  float _speed = -200.0f;
+  float _speed;
 
 public:
   void update(double dt) override;

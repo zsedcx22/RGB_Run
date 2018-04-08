@@ -9,7 +9,7 @@ void BulletComponent::update(double dt) {
 		_parent->setForDelete();
 	}
 
-	move(1500.f*dt, 0.f*dt);
+	move((1500.f*_dir)*dt, 0.f*dt);
 }
 
 void BulletComponent::move(float x, float y)
@@ -21,5 +21,13 @@ void BulletComponent::move(float x, float y)
 	_parent->setPosition(pp);
 }
 
+void BulletComponent::setDirection(int dir)
+{
+	//1 or -1, to either go left or right 
+	this->_dir = dir;
+}
+
 BulletComponent::BulletComponent(Entity* p, float lifetime)
-	: Component(p), _lifetime(lifetime) {}
+	: Component(p), _lifetime(lifetime) {
+	_dir = 1;	//standard direction = right;
+}

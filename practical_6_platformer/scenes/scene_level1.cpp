@@ -3,6 +3,8 @@
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_dm.h"
+#include "../components/cmp_shooting_enemy.h"
+#include "../components/cmp_hurt_enemy.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -51,6 +53,29 @@ void Level1Scene::Load() {
 		auto m = wall->addComponent<ActorMovementComponent>();
 	}
 	{
+		auto wall = makeEntity();
+		wall->setPosition(Vector2f(530.f, 300.f));
+		wall->addTag("floor");
+		//shape component 
+		auto s = wall->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+		s->getShape().setFillColor(Color::White);
+
+		//movement 
+		auto m = wall->addComponent<ActorMovementComponent>();
+	}
+	{
+		//shoting boy test
+		auto shootyBoy = makeEntity();
+		shootyBoy->setPosition(Vector2f(Engine::getWindowSize().x - 30, Engine::getWindowSize().y / 2));
+		auto s = shootyBoy->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 80.f));
+		s->getShape().setFillColor(Color::Yellow);
+		auto mv = shootyBoy->addComponent<EnemyAIComponent>();
+		auto hrt = shootyBoy->addComponent<HurtEnemyComponent>();
+		auto sht = shootyBoy->addComponent<ShootingEnemy>();
+	}
+	{
 		auto dm = makeEntity();
 		dm->setPosition(Vector2f(200, 200));
 		auto x = dm->addComponent<DMComponent>();
@@ -78,17 +103,4 @@ void Level1Scene::Update(const double& dt) {
 
 void Level1Scene::Render() {
 	Scene::Render();
-}
-
-void Level1Scene::GenerateBlocks() {
-	auto wall = makeEntity();
-	wall->setPosition(Vector2f(400.f, 300.f));
-	wall->addTag("floor");
-	//shape component 
-	auto s = wall->addComponent<ShapeComponent>();
-	s->setShape<sf::RectangleShape>(Vector2f(90.f, 40.f));
-	s->getShape().setFillColor(Color::Magenta);
-
-	//movement 
-	auto m = wall->addComponent<ActorMovementComponent>();
 }
