@@ -6,11 +6,11 @@ using namespace sf;
 using namespace std;
 
 void ActorMovementComponent::update(double dt) {
-	move(Vector2f(-100.0f*dt, 0.f));
+	move(Vector2f(_speed*dt, 0.f));
 }
 
 ActorMovementComponent::ActorMovementComponent(Entity* p)
-    : _speed(1.0f), Component(p) {}
+    : _speed(-200.0f), Component(p) {}
 
 bool ActorMovementComponent::validMove(const sf::Vector2f& pos) {
   
@@ -26,4 +26,14 @@ void ActorMovementComponent::move(const sf::Vector2f& p) {
 
 void ActorMovementComponent::move(float x, float y) {
   move(Vector2f(x, y));
+}
+
+float ActorMovementComponent::getSpeed()
+{
+	return _speed;
+}
+
+void ActorMovementComponent::setSpeed(float s)
+{
+	this->_speed = s;
 }

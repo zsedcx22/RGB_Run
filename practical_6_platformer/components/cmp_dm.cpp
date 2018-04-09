@@ -7,6 +7,8 @@
 #include "../components/cmp_enemy_ai.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML\Graphics.hpp>
+#include <SFML\System.hpp>
+#include <stdlib.h>  
 
 using namespace sf;
 using namespace std;
@@ -15,14 +17,8 @@ using namespace std;
 void DMComponent::update(double dt)
 {
 	if (_frameCount < _generateSpeed) {
-		_frameCount += 2;
+		_frameCount += 1;
 	}
-	/*if (Keyboard::isKeyPressed(Keyboard::F1)) {
-		_genCounter = 1;
-	}
-	if (Keyboard::isKeyPressed(Keyboard::F2)) {
-		_genCounter = 2;
-	}*/
 	else 
 	{
 		if (_gameState == 0)
@@ -40,11 +36,11 @@ void DMComponent::update(double dt)
 			auto m = wall->addComponent<ActorMovementComponent>();
 			_frameCount = 0;
 			_genCounter += 1;
-			if (_genCounter >= 15)
+			if (_genCounter >= 1)
 			{
 				_gameState = 1;
 				_genCounter = 0;
-				_generateSpeed = 1000;
+				_generateSpeed = 10;
 			}
 		}
 		else if (_gameState == 1)
@@ -79,57 +75,71 @@ void DMComponent::update(double dt)
 		}
 		else if (_gameState == 2)
 		{
-			auto wall = Component::_parent->scene->makeEntity();
-			//auto wall = makeEntity();
-			wall->setPosition(Vector2f(_platLGen, _platHGen));
-			wall->addTag("floor");
-			//shape component 
-			auto s = wall->addComponent<ShapeComponent>();
-			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-			//changeable variable
-			if (_lastColour == 0)
-			{
-				s->getShape().setFillColor(Color::Red);
-				_lastColour = 1;
-			}
-			else if(_lastColour == 1)
-			{
-				s->getShape().setFillColor(Color::Green);
-				_lastColour = 2;
-			}
-			else
-			{
-				s->getShape().setFillColor(Color::Blue);
-				_lastColour = 0;
-			}
-			while (_platHGen > 0.f && _platHGen < 720.f)
-			{
-				if (_platHGen < 360.f)
-				{
-					_platHGen += (rand() % 500) * 1.f;
+			//determine number of blocks to renderat the same time
+			int range = getRandom(1, 2);
+
+			//generate the number of blocks based on the random number
+			while (range > 0) {
+				auto wall = Component::_parent->scene->makeEntity();
+				wall->setPosition(Vector2f(_platLGen, _platHGen));
+				wall->addTag("floor");
+				auto s = wall->addComponent<ShapeComponent>();
+				s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
+
+				//select colour at random
+				int col = getRandom(1, 3);
+				if(col==1){
+					s->getShape().setFillColor(Color::Red);
 				}
-				else
-				{
-					_platHGen -= (rand() % 500) * 1.f;
+				else if (col == 2) {
+					s->getShape().setFillColor(Color::Green);
+				}
+				else if (col == 3) {
+					s->getShape().setFillColor(Color::Blue);
 				}
 
-				if (_platHGen > 0.f && _platHGen < 720.f)
+				//select y position
+				while (_platHGen > 40.f && _platHGen < 720.f)
 				{
-					cout << _platHGen;
-					break;
+					if (_platHGen < 360.f)
+					{
+						_platHGen += (rand() % 500) * 1.f;
+					}
+					else
+					{
+						_platHGen -= (rand() % 500) * 1.f;
+					}
+
+					if (_platHGen > 0.f && _platHGen < 720.f)
+					{
+						cout << _platHGen;
+						break;
+					}
+					else
+					{
+						_platHGen = 360.f;
+					}
+
 				}
-				else
-				{
-					_platHGen = 360.f;
-				}
-				
-			}
-			//movement 
-			auto m = wall->addComponent<ActorMovementComponent>();
+				// add movement 
+				auto m = wall->addComponent<ActorMovementComponent>();
+				m->setSpeed(this->_speed);
+				range--;
+			}			
+			//set new generateSpeed value, to randomise the distance between the blocks
+			_generateSpeed = getRandom(40+(_speed*-0.01), 60 + (_speed*-0.01));
+			this->_speed -= 10.0f;
 			_frameCount = 0;
 		}
 	}
 
+}
+
+int DMComponent::getRandom(int min, int max) {
+	//range = min -> max 
+	int range = rand() % max + min;
+
+	return range;
 }
 
 void DMComponent::loadEntites()
@@ -140,5 +150,5 @@ void DMComponent::loadEntites()
 }
 
 DMComponent::DMComponent(Entity* p)
-    : _speed(10.f), Component(p) {}
+    : _speed(-200.f), Component(p) {}
 

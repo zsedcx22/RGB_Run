@@ -1,4 +1,3 @@
-
 #pragma once
 #include <ecm.h>
 
@@ -12,6 +11,8 @@ public:
   void move(const sf::Vector2f&);
   void move(float x, float y);
   void render() override {}
+  float getSpeed();
+  void setSpeed(float s);
    ActorMovementComponent(Entity* p);
   ActorMovementComponent() = delete;
 };

@@ -1,8 +1,11 @@
 #include "cmp_movement_player.h"
+#include "cmp_actor_movement.h"
 #include "cmp_sprite.h"
+#include "cmp_bullet.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
 using namespace sf;
 using namespace std;
@@ -18,7 +21,7 @@ void PlayerMovementComponent::update(double dt) {
 	
 	//update jump
 	if (!_jumping && !_grounded) {
-		_y_acceleration = _pulse/_gravity * -1;
+		_y_acceleration = _pulse*30/_gravity * -1;
 	}
 	if (!_grounded) {
 		y -= _y_acceleration;
@@ -26,11 +29,15 @@ void PlayerMovementComponent::update(double dt) {
 	}
 	
 	if (_grounded) {
-		_jumping = false;	
-		//todo -= the speed of the object standing on
-		x -= 100.0f;
+		_jumping = false;
+		x = dirX*_speed*50+(_platformMovement);
 	}
-	move(Vector2f( (x+(dirX*_speed*50))*dt , (y)));
+
+	if (x == 0) {
+		x = (dirX*_speed * 50);
+	}
+	
+	move(Vector2f( x*dt , (y)));
 }
 
 void PlayerMovementComponent::setSpeed(float spd)
@@ -153,6 +160,7 @@ bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
 	unsigned int _playerColour = _parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor().toInteger();
 	bool grounded;
 	bool collidable;
+	_platformMovement = 0;
 	//access the list of entities
 	auto x = Component::_parent->scene->ents.list;
 	//iteration through entities
@@ -177,8 +185,13 @@ bool PlayerMovementComponent::isGrounded(sf::Vector2f pos)
 			if (playerBottom < obj->getPosition().y + 40 && playerBottom > obj->getPosition().y)
 			{
 				//check x position
-				if (pos.x > obj->getPosition().x - 5 &&  pos.x < obj->getPosition().x + 155)
+				if (pos.x > obj->getPosition().x - 5 && pos.x < obj->getPosition().x + 155) {
+					//player is confirmed to be drounded, get the x movement of the platform
+					auto objSpeed = obj->GetCompatibleComponent<ActorMovementComponent>()[0]->getSpeed();
+					this->_platformMovement = objSpeed;
 					return true;
+				}
+					
 			}
 			else {
 				grounded = false;
@@ -227,6 +240,7 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 	else {
 		dirX = 0;
 	}
+	
 
 	//jump behaviour
 	if (Keyboard::isKeyPressed(Keyboard::Up)) {
@@ -243,6 +257,7 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 		//input debug information here
 		auto x = Component::_parent->scene->ents.list;
 		_grounded = false;
+		_jumping = false;
 		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
 	}
@@ -264,7 +279,27 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
 		s->getShape().setFillColor(Color::Blue);
 	}
+	if (Keyboard::isKeyPressed(Keyboard::Space) && !_firePressed) {
+		//blue
+		fireBullet(pos);
+		_firePressed = true;
+	}
+	if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+		_firePressed = false;
+	}
+}
 
+void PlayerMovementComponent::fireBullet(sf::Vector2f pos)
+{
+	auto bullet = Component::_parent->scene->makeEntity();
+	bullet->setPosition(pos);
+	bullet->addTag("bullet_player");
+	auto s = bullet->addComponent<BulletComponent>();
+	s->setDirection(1);
+	auto p = bullet->addComponent<ShapeComponent>();
+	p->setShape<sf::RectangleShape>(Vector2f(5.f, 5.f));
+	p->getShape().setFillColor(_parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor());
+	p->getShape().setOrigin(-40, 0);
 }
 
 PlayerMovementComponent::PlayerMovementComponent(Entity* p)
