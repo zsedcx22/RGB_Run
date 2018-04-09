@@ -4,6 +4,8 @@
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_enemy_ai.h"
 #include "../components/cmp_dm.h"
+#include "../components/cmp_shooting_enemy.h"
+#include "../components/cmp_hurt_enemy.h"
 #include "../game.h"
 #include <LevelSystem.h>
 #include <iostream>
@@ -66,6 +68,17 @@ void Level1Scene::Load() {
 		dm->setPosition(Vector2f(200, 200));
 		auto x = dm->addComponent<DMComponent>();
 
+	}
+	{
+		//shoting boy test
+		auto shootyBoy = makeEntity();
+		shootyBoy->setPosition(Vector2f(Engine::getWindowSize().x - 30, Engine::getWindowSize().y / 2));
+		auto s = shootyBoy->addComponent<ShapeComponent>();
+		s->setShape<sf::RectangleShape>(Vector2f(150.f, 80.f));
+		s->getShape().setFillColor(Color::Yellow);
+		auto mv = shootyBoy->addComponent<EnemyAIComponent>();
+		auto hrt = shootyBoy->addComponent<HurtEnemyComponent>();
+		auto sht = shootyBoy->addComponent<ShootingEnemy>();
 	}
 	// GenerateBlocks();
 	////Simulate long loading times
