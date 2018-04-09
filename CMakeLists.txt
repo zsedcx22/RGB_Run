@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+﻿cmake_minimum_required(VERSION 3.9)
 # Compiler flags
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /EHsc" CACHE INTERNAL "" FORCE)
@@ -32,7 +32,7 @@ link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
 
 #### Add Engine and our own library projects####
 
-file(GLOB_RECURSE RESOURCE_FILES "res/*.*")
+file(GLOB_RECURSE RESOURCE_FILES "resources/*.*")
 ####
 file(GLOB_RECURSE SOURCE_FILES engine/src/*.cpp engine/src/*.h)
 add_library(lib_engine STATIC ${SOURCE_FILES} ${RESOURCE_FILES})
@@ -54,27 +54,27 @@ target_include_directories(lib_ecm INTERFACE "${CMAKE_SOURCE_DIR}/engine/lib_ecm
 target_link_libraries(lib_ecm PRIVATE lib_maths)
 
 ## platformer
-file(GLOB_RECURSE SOURCES practical_6_platformer/*.cpp practical_6_platformer/*.h)
-file(GLOB_RECURSE CMPNTS practical_6_platformer/components/*.cpp practical_6_platformer/components/*.h)
-file(GLOB_RECURSE SCENES practical_6_platformer/scenes/*.cpp practical_6_platformer/scenes/*.h)
-add_executable(PRACTICAL_6_PLATFORMER ${SOURCES} ${RESOURCE_FILES})
+file(GLOB_RECURSE SOURCES platformer/*.cpp platformer/*.h)
+file(GLOB_RECURSE CMPNTS platformer/components/*.cpp platformer/components/*.h)
+file(GLOB_RECURSE SCENES platformer/scenes/*.cpp platformer/scenes/*.h)
+add_executable(PLATFORMER ${SOURCES} ${RESOURCE_FILES})
 source_group("components" FILES ${CMPNTS})
 source_group("resources" FILES ${RESOURCE_FILES})
-#target_include_directories(PRACTICAL_6_PLATFORMER SYSTEM PRIVATE ${SFML_INCS} ${B2D_INCS})
-target_link_libraries(PRACTICAL_6_PLATFORMER lib_engine)
-set(EXECUTABLES ${EXECUTABLES} PRACTICAL_6_PLATFORMER)
+#target_include_directories(PLATFORMER SYSTEM PRIVATE ${SFML_INCS} ${B2D_INCS})
+target_link_libraries(PLATFORMER lib_engine)
+set(EXECUTABLES ${EXECUTABLES} PLATFORMER)
 
 #### Target for copying resources to build dir####
 if(APPLE)
   add_custom_target(copy_resources ALL
           COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${PROJECT_SOURCE_DIR}/res" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res
+          "${PROJECT_SOURCE_DIR}/resources" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
           COMMAND ${CMAKE_COMMAND} -E copy_directory
           "${CMAKE_SOURCE_DIR}/lib/sfml/extlibs/libs-osx/Frameworks" ${CMAKE_BINARY_DIR}/lib/sfml/Frameworks
           )
 else()
   add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${PROJECT_SOURCE_DIR}/res" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/res
+          "${PROJECT_SOURCE_DIR}/resources" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/resources
           )
 endif()
 
