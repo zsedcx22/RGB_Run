@@ -2,6 +2,7 @@
 #include "cmp_actor_movement.h"
 #include "cmp_sprite.h"
 #include "cmp_bullet.h"
+#include "../helper_code/Controls.h"
 #include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
@@ -217,12 +218,12 @@ void PlayerMovementComponent::updatePhysics()
 void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 {
 	//check collision
-	if (Keyboard::isKeyPressed(Keyboard::Left) ||
-		Keyboard::isKeyPressed(Keyboard::Right)) {
+	if (Keyboard::isKeyPressed(Controls::GetKey("Left")) ||
+		Keyboard::isKeyPressed(Controls::GetKey("Right"))) {
 		// Moving Either Left or Right
 		//check collision everytime a buyttoin is pressed
 		
-		if (Keyboard::isKeyPressed(Keyboard::Right) && _mvRight) {
+		if (Keyboard::isKeyPressed(Controls::GetKey("Right")) && _mvRight) {
 			getCollision(pos);
 			if (_mvRight) {
 				dirX = 1;
@@ -231,7 +232,7 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 				dirX = 0;
 			}
 		}
-		else if(Keyboard::isKeyPressed(Keyboard::Left) && _mvLeft){
+		else if(Keyboard::isKeyPressed(Controls::GetKey("Left")) && _mvLeft){
 			getCollision(pos);
 			if (_mvLeft) {
 				dirX = -1;
@@ -247,7 +248,7 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 	
 
 	//jump behaviour
-	if (Keyboard::isKeyPressed(Keyboard::Up)) {
+	if (Keyboard::isKeyPressed(Controls::GetKey("Jump"))) {
 		getCollision(pos);
 		if (_grounded) {
 			_y_acceleration = 0;
@@ -265,30 +266,30 @@ void PlayerMovementComponent::updateMovement(sf::Vector2f pos, double dt)
 		_parent->setPosition(Vector2f(400, 50));
 		cout << x[0];
 	}
-	
-	if (Keyboard::isKeyPressed(Keyboard::Q)) {
+
+	if (Keyboard::isKeyPressed(Controls::GetKey("Red"))) {
 		//red
 		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
 		s->getShape().setFillColor(Color::Red);
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::W)) {
+	if (Keyboard::isKeyPressed(Controls::GetKey("Green"))) {
 		//green
 		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
 		s->getShape().setFillColor(Color::Green);
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::E)) {
+	if (Keyboard::isKeyPressed(Controls::GetKey("Blue"))) {
 		//blue
 		auto s = _parent->GetCompatibleComponent<ShapeComponent>()[0];
 		s->getShape().setFillColor(Color::Blue);
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Space) && !_firePressed) {
+	if (Keyboard::isKeyPressed(Controls::GetKey("Shoot")) && !_firePressed) {
 		//blue
 		fireBullet(pos);
 		_firePressed = true;
 	}
-	if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+	if (!Keyboard::isKeyPressed(Controls::GetKey("Shoot"))) {
 		_firePressed = false;
 	}
 }

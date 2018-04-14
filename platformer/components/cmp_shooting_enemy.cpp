@@ -17,10 +17,9 @@ void ShootingEnemy::update(double dt) {
 		p->setShape<sf::RectangleShape>(Vector2f(5.f, 5.f));
 		p->getShape().setFillColor(_parent->GetCompatibleComponent<ShapeComponent>()[0]->getShape().getFillColor());
 		p->getShape().setOrigin(-40, 0);
-
 		_counter = 0;
 	}
-	else _counter+= 1;
+	else _counter += 1;
 }
 
 ShootingEnemy::ShootingEnemy(Entity* p)

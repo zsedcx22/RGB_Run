@@ -5,6 +5,9 @@
 #include "../components/cmp_movement_player.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_shooting_enemy.h"
+#include "../components/cmp_hurt_enemy.h"
+
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML\Graphics.hpp>
 
@@ -19,7 +22,7 @@ void DMComponent::update(double dt)
 	}
 	/*if (Keyboard::isKeyPressed(Keyboard::F1)) {
 		_genCounter = 1;
-	}
+	
 	if (Keyboard::isKeyPressed(Keyboard::F2)) {
 		_genCounter = 2;
 	}*/
@@ -133,11 +136,21 @@ void DMComponent::update(double dt)
 
 }
 
-void DMComponent::loadEntites()
+void DMComponent::makeDeadlyPlatform(float yPos)
 {
-	//get a pointer to the entities 
-	Component::_parent->scene->ents;
+	
+}
 
+void DMComponent::makeShootyBoy()
+{
+	auto shootyBoy = _parent->scene->makeEntity();
+	shootyBoy->setPosition(Vector2f(Engine::getWindowSize().x - 30, Engine::getWindowSize().y + 50));
+	auto s = shootyBoy->addComponent<ShapeComponent>();
+	s->setShape<sf::RectangleShape>(Vector2f(150.f, 80.f));
+	s->getShape().setFillColor(Color::Yellow);
+	auto mv = shootyBoy->addComponent<EnemyAIComponent>();
+	auto hrt = shootyBoy->addComponent<HurtEnemyComponent>();
+	auto sht = shootyBoy->addComponent<ShootingEnemy>();
 }
 
 DMComponent::DMComponent(Entity* p)

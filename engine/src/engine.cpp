@@ -3,7 +3,10 @@
 #include "system_physics.h"
 #include "system_renderer.h"
 #include "system_resources.h"
+#include "../platformer/helper_code/Controls.h"
+#include <stdexcept>
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <future>
 #include <iostream>
 #include <stdexcept>
@@ -29,7 +32,7 @@ void Loading_update(float dt, const Scene* const scn) {
   }
 }
 void Loading_render() {
-  // cout << "Eng: Loading Screen Render\n";
+  // cout << "Eng: Loading Screen Render \n";
   static CircleShape octagon(80, 8);
   octagon.setOrigin(80, 80);
   octagon.setRotation(loadingspinner);
@@ -81,12 +84,13 @@ void Engine::Render(RenderWindow& window) {
 
 void Engine::Start(unsigned int width, unsigned int height,
                    const std::string& gameName, Scene* scn) {
-  RenderWindow window(VideoMode(width, height), gameName);
+   RenderWindow window(VideoMode(width, height), gameName);
   _gameName = gameName;
   _window = &window;
   _window->setVerticalSyncEnabled(true);
   Renderer::initialise(window);
   Physics::initialise();
+  Controls::initialise();
   ChangeScene(scn);
   while (window.isOpen()) {
     Event event;
@@ -121,6 +125,20 @@ std::shared_ptr<Entity> Scene::makeEntity() {
 
 void Engine::setVsync(bool b) { _window->setVerticalSyncEnabled(b); }
 
+void Engine::setFullscreen(bool b)
+{
+	auto scrSize = getWindowSize();
+	if (b) {
+		_window->create(VideoMode(scrSize.x, scrSize.y), _gameName, Style::Fullscreen);
+	}
+	else {
+		_window->create(VideoMode(scrSize.x, scrSize.y), _gameName);
+	}
+	//create function deletes the previous window and starts another, reset all the screen options manually
+	_window->setFramerateLimit(60);
+	_window->setVerticalSyncEnabled(true);
+}
+
 void Engine::ChangeScene(Scene* s) {
   cout << "Eng: changing scene: " << s << endl;
   auto old = _activeScene;
@@ -138,6 +156,9 @@ void Engine::ChangeScene(Scene* s) {
   }
 }
 
+Scene* Engine::GetActiveScene() {
+	return _activeScene;
+}
 void Scene::Update(const double& dt) { ents.update(dt); }
 
 void Scene::Render() { ents.render(); }
@@ -194,12 +215,3 @@ long long last() {
 
 Scene::~Scene() { UnLoad(); }
 
-
-//our implementation of the physics engine / collision engine.
-int MyPhysics::getThing(int x) {
-	cout << "Physics thing " <<  x << "\n";
-	//Engine::get
-	
-	return 0;
-
-}

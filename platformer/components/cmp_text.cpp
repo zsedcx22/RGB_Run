@@ -17,3 +17,19 @@ void TextComponent::SetText(const std::string& str) {
   _string = str;
   _text.setString(_string);
 }
+
+void TextComponent::SetColour(sf::Color col)
+{
+	_text.setColor(col);
+}
+
+void TextComponent::SetPosition(sf::Vector2f pos)
+{
+	_text.setPosition(pos);
+}
+
+sf::Text TextComponent::GetText()
+{
+	return _text;
+}
+

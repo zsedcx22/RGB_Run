@@ -6,16 +6,6 @@
 #include <mutex>
 #include <string>
 
-//my own physics engine
-class MyPhysics {
-private:
-	int x = 10;
-
-public:
-	int getThing(int x);
-
-};
-
 class Scene {
 public:
   Scene() = default;
@@ -29,7 +19,6 @@ public:
   std::shared_ptr<Entity> makeEntity();
 
   EntityManager ents;
-  //MyPhysics physics; 
 
 protected:
   void setLoaded(bool);
@@ -45,9 +34,12 @@ public:
   static void Start(unsigned int width, unsigned int height,
                     const std::string& gameName, Scene* scn);
   static void ChangeScene(Scene*);
+  static Scene* GetActiveScene();
   static sf::RenderWindow& GetWindow();
   static sf::Vector2u getWindowSize();
   static void setVsync(bool b);
+  static void setFullscreen(bool b);
+ 
 
 private:
   static Scene* _activeScene;
@@ -55,7 +47,6 @@ private:
   static void Update();
   static void Render(sf::RenderWindow& window);
 };
-
 
 
 namespace timing {

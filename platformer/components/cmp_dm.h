@@ -20,8 +20,8 @@ public:
 	
   void update(double dt) override;
   void render() override {}
-  void loadEntites();
-
+  void makeDeadlyPlatform(float ypos);
+  void makeShootyBoy();
    DMComponent(Entity* p);
   DMComponent() = delete;
 };
