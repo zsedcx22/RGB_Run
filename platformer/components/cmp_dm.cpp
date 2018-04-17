@@ -1,158 +1,192 @@
 #include "cmp_dm.h"
-#include <LevelSystem.h>
 #include <engine.h>
 #include <iostream>
 #include "../components/cmp_movement_player.h"
 #include "../components/cmp_sprite.h"
 #include "../components/cmp_enemy_ai.h"
+#include "../components/cmp_score.h"
 #include "../components/cmp_shooting_enemy.h"
 #include "../components/cmp_hurt_enemy.h"
+#include "../helper_code/Loader.h"
 
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML\Graphics.hpp>
 
 using namespace sf;
 using namespace std;
 
+void DMComponent::nextLevel()
+{
+	//reset parameters and set new level
+	//increase the difficulty parameters. 
+	_gameStepCount = 0;
+	_level++;
+	//increment the difficulty for the next sequence
+	_lvlSpeed -= 150;
+	_platformFrequency -= 10;
+	_lvlStEnemy++;
+	_lvlPlatEnemy += 10;
+	_levelGenFreq += 1500;	//make spaces between levels longer
+
+	_currentLevel = new LevelGenerator(_lvlSpeed, _platformFrequency, _lvlStEnemy, _lvlPlatEnemy, _levelGenFreq);
+	createText(Vector2f(Engine::getWindowSize().x+500, 50), -150, Color::White, "Level " + std::to_string(_level));
+	
+}
 
 void DMComponent::update(double dt)
 {
-	if (_frameCount < _generateSpeed) {
-		_frameCount += 2;
+	//initial 
+	//generate new set
+	if (_gameStepCount >= _levelGenFreq) {
+		nextLevel();
 	}
-	/*if (Keyboard::isKeyPressed(Keyboard::F1)) {
-		_genCounter = 1;
-	
-	if (Keyboard::isKeyPressed(Keyboard::F2)) {
-		_genCounter = 2;
-	}*/
-	else 
-	{
-		if (_gameState == 0)
-		{
-			auto wall = Component::_parent->scene->makeEntity();
-			//auto wall = makeEntity();
-			wall->setPosition(Vector2f(_platLGen, _platHGen));
-			wall->addTag("floor");
-			//shape component 
-			auto s = wall->addComponent<ShapeComponent>();
-			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-			//changeable variable
-			s->getShape().setFillColor(Color::White);
-			//movement 
-			auto m = wall->addComponent<ActorMovementComponent>();
-			_frameCount = 0;
-			_genCounter += 1;
-			if (_genCounter >= 15)
-			{
-				_gameState = 1;
-				_genCounter = 0;
-			}
-		}
-		else if (_gameState == 1)
-		{
-			auto wall = Component::_parent->scene->makeEntity();
-			//auto wall = makeEntity();
-			wall->setPosition(Vector2f(_platLGen, _platHGen));
-			wall->addTag("floor");
-			//shape component 
-			auto s = wall->addComponent<ShapeComponent>();
-			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-			//changeable variable
-			if (_lastColour == 0)
-			{
-				s->getShape().setFillColor(Color::Red);
-				_lastColour = 1;
-			}
-			else
-			{
-				s->getShape().setFillColor(Color::Green);
-				_lastColour = 0;
-			}
-			//movement 
-			auto m = wall->addComponent<ActorMovementComponent>();
-			_frameCount = 0;
-			_genCounter += 1;
-			if (_genCounter >= 15)
-			{
-				_gameState = 2;
-				_genCounter = 0;
-			}
-		}
-		else if (_gameState == 2)
-		{
-			auto wall = Component::_parent->scene->makeEntity();
-			//auto wall = makeEntity();
-			wall->setPosition(Vector2f(_platLGen, _platHGen));
-			wall->addTag("floor");
-			//shape component 
-			auto s = wall->addComponent<ShapeComponent>();
-			s->setShape<sf::RectangleShape>(Vector2f(150.f, 40.f));
-			//changeable variable
-			if (_lastColour == 0)
-			{
-				s->getShape().setFillColor(Color::Red);
-				_lastColour = rand() % 3;
-				//cout << _lastColour;
-			}
-			else if(_lastColour == 1)
-			{
-				s->getShape().setFillColor(Color::Green);
-				_lastColour = rand() % 3;
-				//cout << _lastColour;
-			}
-			else if (_lastColour == 2)
-			{
-				s->getShape().setFillColor(Color::Blue);
-				_lastColour = rand() % 3;
-			}
-			while (_platHGen > 0.f && _platHGen < 720.f)
-			{
-				if (_platHGen < 360.f)
-				{
-					_platHGen += (rand() % 500) * 1.f;
-				}
-				else
-				{
-					_platHGen -= (rand() % 500) * 1.f;
-				}
-
-				if (_platHGen > 0.f && _platHGen < 720.f)
-				{
-					//cout << _platHGen;
-					break;
-				}
-				else
-				{
-					_platHGen = 360.f;
-				}
-				
-			}
-			//movement 
-			auto m = wall->addComponent<ActorMovementComponent>();
-			_frameCount = 0;
-		}
+	else {
+		_gameStepCount++;
+		_currentLevel->RunStep();
 	}
 
-}
-
-void DMComponent::makeDeadlyPlatform(float yPos)
-{
-	
-}
-
-void DMComponent::makeShootyBoy()
-{
-	auto shootyBoy = _parent->scene->makeEntity();
-	shootyBoy->setPosition(Vector2f(Engine::getWindowSize().x - 30, Engine::getWindowSize().y + 50));
-	auto s = shootyBoy->addComponent<ShapeComponent>();
-	s->setShape<sf::RectangleShape>(Vector2f(150.f, 80.f));
-	s->getShape().setFillColor(Color::Yellow);
-	auto mv = shootyBoy->addComponent<EnemyAIComponent>();
-	auto hrt = shootyBoy->addComponent<HurtEnemyComponent>();
-	auto sht = shootyBoy->addComponent<ShootingEnemy>();
+	if (_gameStepCount == 60 * 5) {
+		auto p = Engine::GetActiveScene()->ents.find("player");
+		auto scr = p[0]->GetCompatibleComponent<Score>()[0]->returnScore();
+		
+		createText(Vector2f(Engine::getWindowSize().x + 500, 50), -150, Color::White, std::to_string(scr)+"m" );
+	}
 }
 
 DMComponent::DMComponent(Entity* p)
-    : _speed(10.f), Component(p) {}
+    : Component(p) {
+	
+	_levelGenFreq = 1000;
+	_level = 1;
+	_lvlSpeed = -200;
+	_platformFrequency = 50;
+	_lvlStEnemy = 0;
+	_lvlPlatEnemy = 0;
 
+	//create the begining platforms
+	for (int i = 0; i < 12; i++) {
+		createPlatform(Vector2f(150*i , Engine::getWindowSize().y / 2), _lvlSpeed, Color::Green);
+	}
+
+	createText(Vector2f(Engine::getWindowSize().x,  50), -150, Color::Red, "R");
+	createText(Vector2f(Engine::getWindowSize().x+20, 50), -150, Color::Green, "G");
+	createText(Vector2f(Engine::getWindowSize().x+40, 50), -150, Color::Blue, "B");
+	createText(Vector2f(Engine::getWindowSize().x+80, 50), -150, Color::White, "Run !");
+
+	createText(Vector2f(Engine::getWindowSize().x+400, 50), -150, Color::White, "Level " + std::to_string(_level));
+
+	_currentLevel = new LevelGenerator(_lvlSpeed, _platformFrequency, _lvlStEnemy, _lvlPlatEnemy, _levelGenFreq);
+
+}
+
+
+
+//////////////////////////////
+void LevelGenerator::RunStep()
+{
+	//step by step level control
+	_levelStepCount++;
+	_spawnBuffer++;
+
+	if (_levelStepCount >= _generateSpeed) {
+		_levelStepCount = 0;
+		//randomise the parameters
+		std::uniform_int_distribution<std::mt19937::result_type> color(0, 2);
+		createPlatform(_platformPosition, _platformSpeed, _colors[color(range)]);
+		getNextPlatform();
+	
+
+		//decide on enemy placement./ 
+		//get even distribution of events
+		if (_spawnBuffer >= (150)) {
+			std::uniform_int_distribution<std::mt19937::result_type> enemyType(0, 2);
+
+			//generating situations 
+			if (_enemyShooty > 0 && _enemyPlatform > 0) {
+				//booth enemies are still to be spawned, choose one
+				auto tmp = enemyType(range);
+				if (tmp = 0) {
+					spawnEnemy(0);
+				}
+				else if (tmp = 1) {
+					spawnEnemy(1);
+				}
+				else {
+					//2 == create both
+					spawnEnemy(0);
+					spawnEnemy(1);
+				}
+				_spawnBuffer = 0;
+				return;
+			}
+			else if (_enemyShooty > 0) {
+				spawnEnemy(0);
+				_spawnBuffer = 0;
+			}
+			else if (_enemyPlatform > 0) {
+				spawnEnemy(0);
+				_spawnBuffer = 0;
+			}
+		}
+	}
+}
+
+void LevelGenerator::spawnEnemy(int type)
+{
+	// 0 == shooty enemy 1 = platform enemy;
+	if (type == 0) {
+		createShootingEnemy();
+		_enemyShooty--; 
+	}
+	else {
+		getNextPlatform();
+		createEnemyPlatform(_platformPosition, _platformSpeed);
+		_enemyPlatform--; 
+	}
+}
+
+void LevelGenerator::getNextPlatform()
+{
+	//logic for setting the next y positon of the platforms
+	while (_platformPosition.y > 0.f && _platformPosition.y < _screenSize.y-50)
+	{
+		if (_platformPosition.y < (_screenSize.y/2) && _platformPosition.y > 50.f)
+		{
+			_platformPosition.y += (rand() % 500) * 1.f;
+		}
+		else
+		{
+			_platformPosition.y -= (rand() % 500) * 1.f;
+		}
+		if (_platformPosition.y > 150.f && _platformPosition.y < _screenSize.y - 50)
+		{
+			break;
+		}
+		else
+		{
+			_platformPosition.y = _screenSize.y/2;
+		}
+
+	}
+}
+
+LevelGenerator::LevelGenerator(float speed, float frequency, unsigned int enm_shoot, unsigned int enm_platform, unsigned int duration)
+{
+	
+	//get random seed
+	range.seed(std::random_device()());
+	
+	//initialize the parameters
+	_colors[0] = Color::Blue;
+	_colors[1] = Color::Green;
+	_colors[2] = Color::Red;
+
+	_levelDuration = duration;
+	_levelStepCount = 0;
+	_generateSpeed = frequency;
+	_enemyShooty = enm_shoot;
+	_enemyPlatform = enm_platform;
+	_platformSpeed = speed;
+	_platformPosition.x = Engine::getWindowSize().x;
+	_platformPosition.y = 250.f;
+	_screenSize = Engine::getWindowSize();
+	_spawnBuffer = 0; 
+}

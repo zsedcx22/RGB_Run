@@ -6,7 +6,7 @@ using namespace sf;
 
 void EnemyAIComponent::update(double dt) {
  
-  getMovement(_parent->getPosition());
+  getMovement(_parent->getPosition());	//getMovement updates the _direction 
   auto mov = _direction * (float)(dt * _speed);
   move(mov * (float)(dt * _speed));
  
@@ -59,11 +59,6 @@ void EnemyAIComponent::getMovement(sf::Vector2f mov) {
 	if (plyPos.y > mov.y - 30 && plyPos.y < mov.y + 30) {
 		_direction.y = 0;
 	}
-	
-	//bullet avoidance code : 
-	//get all player-fired bullets and iterate
-	
-
 }
 
 
@@ -74,4 +69,5 @@ EnemyAIComponent::EnemyAIComponent(Entity* p) : ActorMovementComponent(p) {
   _avoidSpeed = 110;
   _avoidDistanceX = 400;		//x distance to start avoiding the the bullet 
   _avoidDistanceY = 150;
+
 }

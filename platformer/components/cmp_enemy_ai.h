@@ -1,5 +1,6 @@
 #pragma once
 #include "cmp_actor_movement.h"
+#include "../engine/src/system_resources.h"
 #include "ecm.h"
 class EnemyAIComponent : public ActorMovementComponent {
 private:
@@ -7,6 +8,7 @@ private:
 	float _avoidSpeed;
 	float _avoidDistanceX;		//x distance to start avoiding the the bullet 
 	float _avoidDistanceY;		//distance to start avoiding the bullets
+
 
 protected:
   sf::Vector2f _direction;

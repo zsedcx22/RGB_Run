@@ -17,6 +17,12 @@ void SpriteComponent::render() { Renderer::queue(_sprite.get()); }
 void ShapeComponent::update(double dt) {
   _shape->setPosition(_parent->getPosition());
   _shape->setRotation(_parent->getRotation());
+
+  //delete all that exits the screen from the 
+  if (_parent->getPosition().x < -200) {
+	  _parent->setForDelete();
+  }
+
 }
 
 void ShapeComponent::render() { Renderer::queue(_shape.get()); }

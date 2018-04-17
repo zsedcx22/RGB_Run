@@ -78,16 +78,6 @@ void OptionsScene::Load() {
 		_btns[i]->setPosition(Vector2f( 40, (65.0f * i) + 20));
 		_btns[i]->GetCompatibleComponent<TextComponent>()[0]->SetPosition( Vector2f(_btns[i]->getPosition().x+25, _btns[i]->getPosition().y + 15));
 	}
-
-	//for (auto btn : _controlsBtns) {
-	//	auto x = Controls::GetKey(btn.second);
-	//	auto temp = btn.first;
-	//	temp->GetCompatibleComponent<TextComponent>()[1]->SetText( (string)x);
-	//	
-	//}
-	//display the corresponding keys
-	
-
     setLoaded(true);
 }
 
@@ -114,7 +104,8 @@ void OptionsScene::checkInput()
 	}
 	else if (_btn_local_windowed->GetCompatibleComponent<ButtonComponent>()[0]->isPressed()) {
 		Engine::setFullscreen(isWindowed);
-	
+		Engine::ChangeScene(&options);
+
 		if (isWindowed == false) isWindowed = true;
 		else if (isWindowed == true) isWindowed = false;
 	}

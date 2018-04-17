@@ -1,31 +1,38 @@
 #pragma once
+#include <SFML/Audio.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include "system_resources.h"
 #include <ecm.h>
 
 class PlayerMovementComponent : public Component {
 private:
+
 	float dirX = 0;
 	float dirY = 0;
-	float _platformMovement;
+	float _platformMovement;	//the x speed of the platform the player is standing on
 	int falling = 1;
+	float _y_acceleration;
+	const float _gravity = 70.0f;
+
+	sf::SoundBuffer _loadShoot;
+	sf::SoundBuffer _loadcolChange;
+	sf::Sound _sndShoot;
+	sf::Sound _sndColChange;
 
 protected:
 	bool validMove(const sf::Vector2f&);
 	//current speed.
-	float _speed = 40.f;
-	int xSpeed;
-	int ySpeed;
+	float _speed;
+	float _pulse;
 
 	//collision swiches
-	bool _grounded = false;
-	bool _jumping = true;
-	bool _mvLeft = true;
-	bool _mvRight = true;
-	bool _firePressed = false;
-	float _pulse = 27.0f;
-	float _y_acceleration = 0.f;
-	//float _x_acceleration = 0.f;
-	const float _friction = 2.f;
-	const float _gravity = 70.0f;
+	bool _grounded;
+	bool _jumping;
+	bool _mvLeft;
+	bool _mvRight;
+	bool _firePressed;
+	bool _alive;
+	bool _showGameOver;
 
 public:
 	void update(double dt) override;
@@ -39,9 +46,8 @@ public:
 	void loadEntites();
 	void getCollision(sf::Vector2f pos);
 	void fireBullet(sf::Vector2f pos);
-	void updatePhysics();
 	void updateMovement(sf::Vector2f pos, double dt);
-
+	void setDead();
 	PlayerMovementComponent(Entity* p);
 	PlayerMovementComponent() = delete;
 };
