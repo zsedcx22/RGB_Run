@@ -8,6 +8,7 @@ class MenuScene : public Scene {
 private:
 	std::shared_ptr<Entity> _btn_local_options;
 	std::shared_ptr<Entity> _btn_local_game;
+	std::shared_ptr<Entity> _btn_local_exit;
 
 	std::vector<std::shared_ptr<Entity>> _btns;
 public:

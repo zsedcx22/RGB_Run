@@ -4,7 +4,8 @@
 
 class Level1Scene : public Scene {
 
-private:
+protected:
+	
 	
 
 public:
@@ -17,5 +18,4 @@ public:
 
   void Render() override;
 
-  void GenerateBlocks();
 };
